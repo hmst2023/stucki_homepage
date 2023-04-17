@@ -5,7 +5,7 @@ export default async (req, res)=>{
 
         const {username, password} = req.body
 
-        const result = await fetch(`http://127.0.0.1:8000/login`, {
+        const result = await fetch(`http://127.0.0.1:8000/users/login`, {
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({username, password})
@@ -20,7 +20,7 @@ export default async (req, res)=>{
                     path:'/',
                     httpOnly: true,
                     sameSite:'strict',
-                    maxAge:30
+                    maxAge:2100
                     
                 }
             )).json({

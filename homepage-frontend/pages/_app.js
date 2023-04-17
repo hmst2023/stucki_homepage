@@ -8,9 +8,9 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col container p-5 mx-auto">
+      <div>
         <Header />
-        <div className="flex-1 "><Component {...pageProps} /></div>      
+        <Component {...pageProps} />      
       </div>
     </AuthProvider>
   )
