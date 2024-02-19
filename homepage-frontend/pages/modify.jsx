@@ -23,7 +23,7 @@ const modify = ({jwt}) => {
   const router = useRouter();
 
   useEffect(()=>{
-    fetch('http://127.0.0.1:8000/groups')
+    fetch(process.env.REACT_APP_BACKEND_URL + 'groups')
     .then((response)=>response.json())
     .then((data)=>setGroups(data))
     },[])
@@ -31,7 +31,7 @@ const modify = ({jwt}) => {
 
   const handleNewGroup = async (event) => {
     event.preventDefault()
-    const response = await fetch('http://localhost:8000/groups',{
+    const response = await fetch(process.env.REACT_APP_BACKEND_URL + 'groups',{
       method:'POST',
       headers:{
         'Content-Type':'application/json'
@@ -56,7 +56,7 @@ const modify = ({jwt}) => {
     if (img) {formData.append("img", img);}
 
 
-    const response = await fetch('http://localhost:8000/entries',{
+    const response = await fetch(process.env.FASTAPI_BACKEND + '/entries',{
       method:'POST',
       body: formData
     })

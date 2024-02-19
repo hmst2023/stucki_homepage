@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
+from pydantic_core import core_schema
 from fastapi import Form, UploadFile
 from bson import ObjectId
-from typing import Optional,List
+from typing import Optional,List, Any, Callable, Annotated
 from enum import Enum
 from datetime import datetime
 
@@ -15,20 +16,31 @@ class PostEntry:
     group_sequenz: str = Form(None)
 
 
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+class _ObjectIdPydanticAnnotation:
+    # Based on https://docs.pydantic.dev/latest/usage/types/custom/#handling-third-party-types.
 
     @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError('invalid objectid')
-        return str(v)
+    def __get_pydantic_core_schema__(
+        cls,
+        _source_type: Any,
+        _handler: Callable[[Any], core_schema.CoreSchema],
+    ) -> core_schema.CoreSchema:
+        def validate_from_str(input_value: str) -> ObjectId:
+            return ObjectId(input_value)
 
-    @classmethod
-    def __modify_schema__(cls,field_schema):
-        field_schema.update(type='string')
+        return core_schema.union_schema(
+            [
+                # check if it's an instance first before doing any further work
+                core_schema.is_instance_schema(ObjectId),
+                core_schema.no_info_plain_validator_function(validate_from_str),
+            ],
+            serialization=core_schema.to_string_ser_schema(),
+        )
+
+
+PyObjectId = Annotated[
+    ObjectId, _ObjectIdPydanticAnnotation
+]
 
 
 class GroupTypes(str, Enum):
@@ -37,18 +49,18 @@ class GroupTypes(str, Enum):
 
 
 class MongoBaseModel(BaseModel):
-    id:PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id:PyObjectId = Field(alias="_id")
 
     class Config:
         jsonable_encoder = {ObjectId:str}
 
 
 class GetEntry(MongoBaseModel):
-    text: Optional[str]
-    img: Optional[str]
+    text: Optional[str] = None
+    img: Optional[str] = None
     timestamp: datetime
-    group_painting: Optional[PyObjectId]
-    group_sequenz: Optional[PyObjectId]
+    group_painting: Optional[PyObjectId] = None
+    group_sequenz: Optional[PyObjectId] = None
 
 
 class GetGroup(MongoBaseModel):

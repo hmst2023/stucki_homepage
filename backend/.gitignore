@@ -1,0 +1,9 @@
+.venv
+__pycache__
+.DS_Store
+.env
+__init__.py
+Spacefile
+.space/
+copy_db.py
+.pytest_cache

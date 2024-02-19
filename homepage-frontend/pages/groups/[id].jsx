@@ -3,7 +3,7 @@ import Link from "next/link";
 import {useRouter} from "next/router";
 
 export const getStaticPaths = async () => {
-    const res = await fetch(`http://127.0.0.1:8000/groups`);
+    const res = await fetch(process.env.FASTAPI_BACKEND + '/groups');
     const groups = await res.json()
     const paths = groups.map((group) => ({
         params: {id:group._id},
@@ -12,7 +12,7 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async ({params: {id}}) => {
-    const res = await fetch(`http://127.0.0.1:8000/groups/${id}`);
+    const res = await fetch(process.env.FASTAPI_BACKEND + `/groups/${id}`);
     const group = await res.json();
     return {
         props:{group},
@@ -22,7 +22,7 @@ export const getStaticProps = async ({params: {id}}) => {
 const GroupById=({group}) => {
     const router = useRouter();
     function handleDelete () {
-        fetch(`http://localhost:8000/groups/${group._id}`,{
+        fetch(process.env.FASTAPI_BACKEND + `/groups/${group._id}`,{
             method: "Delete"
         })
         .then(response=>console.log(response))

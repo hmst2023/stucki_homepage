@@ -69,6 +69,12 @@ def get_test_entry(request:Request) -> List[GetEntry]:
     return entries
 
 
+# test stuff for testing pydantic2
+@router.get("/hello")
+def welcome(request:Request) -> str:
+    return 'hello'
+
+
 @router.get("/{entry_id}", response_description="Get a single entry")
 def show_single_entry(entry_id: str, request: Request) -> GetEntry:
     entry = request.app.db['entries'].find_one({"_id": ObjectId(entry_id)})

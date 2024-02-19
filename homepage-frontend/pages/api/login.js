@@ -5,7 +5,7 @@ export default async (req, res)=>{
 
         const {username, password} = req.body
 
-        const result = await fetch(`http://127.0.0.1:8000/users/login`, {
+        const result = await fetch(process.env.FASTAPI_BACKEND + '/users/login', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({username, password})

@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <AuthProvider>
       <div>
-        <Header />
+        <Header/>
         <Component {...pageProps} />      
       </div>
     </AuthProvider>

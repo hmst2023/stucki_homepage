@@ -1,20 +1,12 @@
-import React from 'react'
-
-const handleForm = async (event)=> {
-    event.preventDefault();
-    console.log(event);
-} 
-
-
-const test = () => {
+export default function Home() {
   return (
-    <div>
-        <form onSubmit={handleForm}>
-            <button>test </button>
-        </form>
-
-    </div>
+      <>
+        <div style={{
+          backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/e/e0/Grass_at_a_lawn_with_morning_dew_02.jpg")`,
+          height: '100vh',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}/>
+      </>
   )
 }
-
-export default test

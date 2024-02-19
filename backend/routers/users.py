@@ -27,7 +27,7 @@ def login(request: Request, login_user: LoginBase = Body(...)):
 
 @router.post('/register', response_description='Register user')
 def register(request: Request, new_user:UserBase = Body(...)):
-    new_user.password = auth_handler.get_password_hasch(new_user.password)
+    new_user.password = auth_handler.get_password_hash(new_user.password)
     msg_collection = request.app.db['Users']
     new_user = jsonable_encoder(new_user)
     user = msg_collection.insert_one(new_user)

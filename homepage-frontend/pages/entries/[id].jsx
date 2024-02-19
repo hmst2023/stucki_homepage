@@ -3,7 +3,7 @@ import Link from "next/link";
 import {useRouter} from "next/router";
 
 export const getStaticPaths = async () => {
-    const res = await fetch(`http://127.0.0.1:8000/entries`);
+    const res = await fetch(process.env.FASTAPI_BACKEND + '/entries');
     const entries = await res.json()
     const paths = entries.map((entry) => ({
         params: {id:entry._id},
@@ -12,7 +12,7 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async ({params: {id}}) => {
-    const res = await fetch(`http://127.0.0.1:8000/entries/${id}`);
+    const res = await fetch(process.env.FASTAPI_BACKEND + `/entries/${id}`);
     const entry = await res.json();
     return {
         props:{entry},
@@ -22,7 +22,7 @@ export const getStaticProps = async ({params: {id}}) => {
 const EntryById=({entry}) => {
     const router = useRouter();
     function handleDelete () {
-        fetch(`http://localhost:8000/entries/${entry._id}`,{
+        fetch(process.env.FASTAPI_BACKEND + `/entries/${entry._id}`,{
             method: "Delete"
         })
         .then(response=>console.log(response))

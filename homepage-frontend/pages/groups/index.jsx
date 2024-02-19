@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link';
 
 export const getServerSideProps = async() => {
-    const res = await fetch('http://127.0.0.1:8000/groups');
+    const res = await fetch(process.env.FASTAPI_BACKEND + '/groups');
     const groups = await res.json();
     return {
       props: {
