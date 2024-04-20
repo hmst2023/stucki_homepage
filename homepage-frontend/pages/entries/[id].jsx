@@ -3,16 +3,30 @@ import Link from "next/link";
 import {useRouter} from "next/router";
 
 export const getStaticPaths = async () => {
-    const res = await fetch(process.env.FASTAPI_BACKEND + '/entries');
+    try {
+    if (!process.env.NEXT_PUBLIC_FASTAPI_BACKEND) { 
+        throw new Error('Invalid/Missing environment variable: "NEXT_PUBLIC_FASTAPI_BACKEND"') 
+     } 
+    const res = await fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + '/entries');
     const entries = await res.json()
     const paths = entries.map((entry) => ({
         params: {id:entry._id},
     }));
     return {paths, fallback:"blocking"};
+    }
+    catch (error) {
+        if (error.name==='AbortError'){
+          console.log('Possible Timeout')
+        } else {
+          console.log(`Error Message: ${error.message}`)
+        }
+        return {paths:[], fallback:'blocking'}
+    };
 };
 
+
 export const getStaticProps = async ({params: {id}}) => {
-    const res = await fetch(process.env.FASTAPI_BACKEND + `/entries/${id}`);
+    const res = await fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + `/entries/${id}`);
     const entry = await res.json();
     return {
         props:{entry},
@@ -22,7 +36,7 @@ export const getStaticProps = async ({params: {id}}) => {
 const EntryById=({entry}) => {
     const router = useRouter();
     function handleDelete () {
-        fetch(process.env.FASTAPI_BACKEND + `/entries/${entry._id}`,{
+        fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + `/entries/${entry._id}`,{
             method: "Delete"
         })
         .then(response=>console.log(response))

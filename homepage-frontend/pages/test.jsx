@@ -1,3 +1,11 @@
+import styled from 'styled-components'
+const blubb = Math.random() * 1024
+const Button = styled.button`
+    background: #BF4F74;
+    position: absolute;
+    top:${blubb+'px'};
+    left: 50px;
+    `
 export default function Home() {
   return (
       <>
@@ -6,7 +14,10 @@ export default function Home() {
           height: '100vh',
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
-        }}/>
+        }}>
+        <button> hello </button>
+        <Button> hello2 </Button>
+        </div>
       </>
   )
 }

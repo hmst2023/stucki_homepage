@@ -26,7 +26,7 @@ class Authorization:
 
     def encode_token(self, user_id):
         payload = {
-            'exp': datetime.utcnow() + timedelta(minutes=35),
+            'exp': datetime.utcnow() + timedelta(days=31),
             'iat': datetime.utcnow(),
             'sub': user_id
         }

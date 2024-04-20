@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import Header from '../components/Header'
+import  RightNav from '../components/RightNav'
 
 import {AuthProvider} from '../context/AuthContext'
 
@@ -8,9 +9,10 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <AuthProvider>
-      <div>
+      <div className='flex flex-row'>
         <Header/>
-        <Component {...pageProps} />      
+        <Component {...pageProps} />
+        <RightNav/>
       </div>
     </AuthProvider>
   )

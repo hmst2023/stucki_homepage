@@ -1,41 +1,31 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { getCookie } from 'cookies-next'
-import { Input } from 'postcss';
-import { data } from 'autoprefixer';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useNavigate, Link } from 'react-router-dom';
+import useAuth from './hooks/useAuth';
 
-export const getServerSideProps = async({req, res}) => {
-  const jwt = getCookie("jwt", {req,res});
-
-  return {props: {jwt}};
-}
-
-
-const modify = ({jwt}) => {
+const Modify = () => {
+  const {auth, setAuth} = useAuth();
   const [text, setText] = useState('')
   const [groups, setGroups] = useState([])
   const [newGroup, setNewGroup] = useState([])
   const [groupPainting, setGroupPainting] = useState(null)
   const [groupSequenz, setGroupSequenz] = useState('')
-  const [img, setImg] = useState(null)
+  const [media, setMedia] = useState(null)
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(()=>{
-    fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + '/groups')
+    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups')
     .then((response)=>response.json())
     .then((data)=>setGroups(data))
     },[])
-
-
   const handleNewGroup = async (event) => {
     event.preventDefault()
-    const response = await fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + '/groups',{
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups',{
       method:'POST',
       headers:{
-        'Content-Type':'application/json'
+        'Content-Type':'application/json',
+        Authorization : `Bearer ${auth}`
       },
       body:JSON.stringify(newGroup)
     })
@@ -54,18 +44,21 @@ const modify = ({jwt}) => {
     if (text) { formData.append("text", text);}
     if (groupPainting) {formData.append("group_painting", groupPainting);}
     if (groupSequenz) {formData.append("group_sequenz", groupSequenz);}
-    if (img) {formData.append("img", img);}
+    if (media) {formData.append("media_file", media);}
 
-    const response = await fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + '/entries',{
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/entries',{
       method:'POST',
+      headers: {
+              Authorization : `Bearer ${auth}`
+            }, 
       body: formData
     })
     const data = await response.json()
-    router.push('/')
+    navigate('/', {replace:true})
   }
-
+  
   return (
-    <div>token: {jwt}<br/>
+    <div>token: {auth}<br/>
     <p>Create a new Entry:</p>
     <form onSubmit={handleSubmit}>
       <label>text: <input type="text" name="text" onChange={e=>setText(e.target.value)}/></label><br/>
@@ -109,7 +102,7 @@ const modify = ({jwt}) => {
         <button type='submit' onClick={handleNewGroup}>create</button>
       </form>
     }<br/>
-      <input type="file" name="img" onChange={e=>setImg(e.target.files[0])}/><br/>
+      <input type="file" name="media" onChange={e=>setMedia(e.target.files[0])}/><br/>
       <button type='submit' onClick={handleSubmit}>Submit</button>
     </form>
     GroupPainting = {groupPainting} <br/>
@@ -119,4 +112,4 @@ const modify = ({jwt}) => {
   )
 }
 
-export default modify
+export default Modify

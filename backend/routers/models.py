@@ -11,7 +11,7 @@ from datetime import datetime
 @dataclass
 class PostEntry:
     text: str = Form(None)
-    img: UploadFile = Form(None)
+    media_file: UploadFile = Form(None)
     group_painting: str = Form(None)
     group_sequenz: str = Form(None)
 
@@ -58,6 +58,7 @@ class MongoBaseModel(BaseModel):
 class GetEntry(MongoBaseModel):
     text: Optional[str] = None
     img: Optional[str] = None
+    video: Optional[str] = None
     timestamp: datetime
     group_painting: Optional[PyObjectId] = None
     group_sequenz: Optional[PyObjectId] = None
@@ -81,11 +82,11 @@ class PostGroup(BaseModel):
 
 
 class LoginBase(BaseModel):
-    username: str
+    email: str
     password: str
 
 
 class UserBase(BaseModel):
-    username:str
+    email:str
     password:str
 

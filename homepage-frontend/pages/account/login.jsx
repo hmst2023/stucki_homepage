@@ -3,13 +3,13 @@ import { useRouter } from "next/router";
 import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
   const { setUser } = useAuth();
-
   const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // call the API route
@@ -17,7 +17,7 @@ const Login = () => {
     const res = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
     if (res.ok) {
       const user = await res.json();
@@ -43,14 +43,14 @@ const Login = () => {
           onSubmit={handleSubmit}
         >
           <label className="block">
-            <span className="text-gray-700">Username</span>
+            <span className="text-gray-700">E-Mail</span>
             <input
               type="text"
               className="mt-1 block w-full"
               placeholder="your email"
               required
-              onChange={(e) => setUsername(e.target.value)}
-              value={username}
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
             />
           </label>
           <label className="block">

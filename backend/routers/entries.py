@@ -1,14 +1,16 @@
 from io import BytesIO
-from fastapi import APIRouter, Depends, status, Body, HTTPException, Request
+from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 from cloudinary.uploader import upload, destroy
-from PIL import Image, ImageOps
+from PIL import Image
 from datetime import datetime
-from typing import Optional, List
+from typing import List
 from .authentification import Authorization
-from .models import PostEntry, GetEntry, PostGroup
+from .models import PostEntry, GetEntry
 from bson import ObjectId
+from mimetypes import guess_type
+from tempfile import NamedTemporaryFile
+import ffmpeg
 
 
 router = APIRouter()
@@ -16,8 +18,8 @@ auth_handler = Authorization()
 
 
 @router.post("/")
-def post_new_entry(request:Request, entry: PostEntry = Depends()) -> JSONResponse:
-    if all(i is None for i in (entry.img, entry.text)):
+def post_new_entry(request:Request, user_id=Depends(auth_handler.auth_wrapper), entry: PostEntry = Depends()) -> JSONResponse:
+    if all(i is None for i in (entry.media_file, entry.text)):
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content='empty request')
 
     database_entry = {'timestamp': datetime.now()}
@@ -25,21 +27,37 @@ def post_new_entry(request:Request, entry: PostEntry = Depends()) -> JSONRespons
     if entry.text:
         database_entry['text'] = entry.text
 
-    if entry.img:
-        img = Image.open(entry.img.file)
-        exif = img.getexif()
-        output_img = BytesIO()
+    if entry.media_file:
+        if 'image' in guess_type(entry.media_file.filename)[0]:
+            img = Image.open(entry.media_file.file)
+            img = img.convert('RGB')
+            exif = img.getexif()
+            output_img = BytesIO()
+            if exif:
+                if 306 in exif:
+                    database_entry['timestamp'] = datetime.strptime(exif[306], '%Y:%m:%d %H:%M:%S')
+                img.getexif().clear()
 
-        if exif:
-            database_entry['timestamp'] = datetime.strptime(exif[306], '%Y:%m:%d %H:%M:%S')
-            img.getexif().clear()
-
-        img.save(output_img,"JPEG")
-        output_img.seek(0)
-        result = upload(output_img)
-        print(result)
-        database_entry['img'] = result.get('url')
-        database_entry['img_id'] = result.get('public_id')
+            img.save(output_img,"JPEG")
+            output_img.seek(0)
+            result = upload(output_img)
+            database_entry['img'] = result.get('url')
+            database_entry['img_id'] = result.get('public_id')
+        if 'video' in guess_type(entry.media_file.filename)[0]:
+            print(entry.media_file.headers)
+            temp_file = NamedTemporaryFile(delete=False)
+            output_file = NamedTemporaryFile(delete=False, suffix=".mp4")
+            with temp_file as f:
+                f.write(entry.media_file.file.read())
+            (
+                ffmpeg
+                .input(temp_file.name)
+                .output(output_file.name, map_metadata=-1)
+                .run(overwrite_output=True)
+            )
+            result = upload(output_file.name, resource_type="video")
+            database_entry['video'] = result.get('url')
+            database_entry['video_id'] = result.get('public_id')
 
     new_msg = request.app.db['entries'].insert_one(database_entry)
 
@@ -84,7 +102,7 @@ def show_single_entry(entry_id: str, request: Request) -> GetEntry:
 
 
 @router.delete("/{entry_id}", response_description="delete a single entry")
-def delete_single_entry(entry_id:str, request: Request) -> JSONResponse:
+def delete_single_entry(request: Request, entry_id:str, user_id=Depends(auth_handler.auth_wrapper)) -> JSONResponse:
     modified_arrays = 0
     deleted_pics = 0
     if entry := request.app.db['entries'].find_one({"_id": ObjectId(entry_id)}):

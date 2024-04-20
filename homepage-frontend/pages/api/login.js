@@ -3,12 +3,12 @@ import cookie from 'cookie'
 export default async (req, res)=>{
     if (req.method==='POST'){
 
-        const {username, password} = req.body
+        const {email, password} = req.body
 
-        const result = await fetch(process.env.FASTAPI_BACKEND + '/users/login', {
+        const result = await fetch(process.env.NEXT_PUBLIC_FASTAPI_BACKEND + '/users/login', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({username, password})
+            body:JSON.stringify({email, password})
         })
 
         const data = await result.json() 
@@ -24,7 +24,7 @@ export default async (req, res)=>{
                     
                 }
             )).json({
-                'username':data['username'],
+                'email':data['email'],
                 'jwt':jwt
             })
         } else {

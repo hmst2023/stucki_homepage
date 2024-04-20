@@ -3,12 +3,25 @@ import Link from "next/link";
 import {useRouter} from "next/router";
 
 export const getStaticPaths = async () => {
-    const res = await fetch(process.env.FASTAPI_BACKEND + '/groups');
-    const groups = await res.json()
-    const paths = groups.map((group) => ({
-        params: {id:group._id},
-    }));
-    return {paths, fallback:"blocking"};
+    try {
+        if (!process.env.NEXT_PUBLIC_FASTAPI_BACKEND) { 
+            throw new Error('Invalid/Missing environment variable: "NEXT_PUBLIC_FASTAPI_BACKEND"') 
+         } 
+        const res = await fetch(process.env.FASTAPI_BACKEND + '/groups');
+        const groups = await res.json()
+        const paths = groups.map((group) => ({
+            params: {id:group._id},
+            }));
+        return {paths, fallback:"blocking"};
+        }
+    catch (error) {
+        if (error.name==='AbortError'){
+          console.log('Possible Timeout')
+        } else {
+          console.log(`Error Message: ${error.message}`)
+        }
+        return {paths:[],fallback:'blocking'}
+    };
 };
 
 export const getStaticProps = async ({params: {id}}) => {
