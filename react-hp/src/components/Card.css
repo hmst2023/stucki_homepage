@@ -1,0 +1,23 @@
+.Card {
+    border-radius: 12px;
+    padding: 15px;
+    margin: 20px;
+  }
+.Text {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  width: inherit;
+}
+a {
+    text-decoration: none;
+    color: #2d2026;
+}
+.Timestamp {
+    font-size: 10px;
+    text-align: right;
+}
+h3 {
+    color: #443039;
+    font-weight: 600;
+    text-indent: -5px;
+  }

@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import List
 from .authentification import Authorization
 from bson import ObjectId
-from .models import GetGroup, PostGroup, GetOneGroup
+from .models import GetGroup, PostGroup, GetOneGroup, GetEntries
 from datetime import datetime
 
 
@@ -33,15 +33,18 @@ def post_new_group(request:Request, group: PostGroup = Body(...), user_id=Depend
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=str(msg_group_creation))
 
 
-@router.get("/{group_id}", response_description="Get a single Group")
-def show_single_group(group_id: str, request: Request) -> GetOneGroup:
-    group = request.app.db['groups'].find_one({"_id": ObjectId(group_id)})
+@router.get("/{group_type}/{group_id}", response_description="Get a single Group")
+def get_entries_from_single_group(group_type:str, group_id: str, request: Request) -> List[GetEntries]:
+    group = request.app.db['entries'].find({'group_'+group_type: ObjectId(group_id)})
     if group:
-        return GetOneGroup(**group)
+        return_value = []
+        for entry in group:
+            return_value.append(GetEntries(**entry))
+        return return_value
     raise HTTPException(status_code=404, detail=f"Group with {group_id} not found")
 
 
-@router.delete("/{group_id}", response_description="delete a group ")
+@router.delete("/{group_id}", response_description="delete a group")
 def delete_single_group(group_id: str, request: Request, user_id=Depends(auth_handler.auth_wrapper)) -> JSONResponse:
     if group := request.app.db['groups'].find_one({"_id": ObjectId(group_id)}):
         if group['members']:

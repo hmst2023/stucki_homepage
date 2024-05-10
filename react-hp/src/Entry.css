@@ -1,0 +1,26 @@
+.EntryBox {
+    background-color: rgb(213, 97, 165);
+}
+
+.BoxContent {
+    margin: auto;
+    width: fit-content;
+    height:fit-content;
+    padding: 20px;
+}
+.GroupExplanation {
+    margin-top: 50px ;
+    margin-bottom: 20px;
+    font-size: xx-large;
+    padding: 20px;
+}
+
+img, video {
+    max-width: 100%;
+    max-height:90vh;
+}
+
+.TimestampAndTitle {
+    text-align: right;
+    font-size: 10px;
+}

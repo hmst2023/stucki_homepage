@@ -1,0 +1,83 @@
+.Header{
+    text-align: left;
+    display: inline-flex;
+    position: sticky;
+    align-items: center;
+    z-index: 1000;
+    position: -webkit-sticky;
+    background-color: #eaeaea;
+    top: 0;
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: #2d2026;
+    font-size: calc(10px + 1vmin);
+    justify-content: space-between;
+  }
+
+  a {
+    color:  #593f4b;
+    font-weight: 200;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color:  #bc1f68;
+    font-weight: 200;
+    text-decoration: none;
+  }
+
+  ul {
+    background-color: #eaeaea;
+    position: absolute;
+    right:0;
+    display: block;
+    list-style-type: none;
+    margin-right: 28px;
+  }
+  li {
+    margin: 8px;
+  }
+  h1 {
+    font-weight:lighter;
+    font-size: calc(10px + 6vmin);
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 0;
+    line-height: calc(10px + 5vmin) ;
+  }
+  h2 {
+    margin-top: 0;
+    margin-right: 21px;
+    margin-left: 21px;
+    font-weight:lighter;
+    font-size: calc(10px + 1vmin);
+  }
+
+  button {
+    border-style: none;
+    font-size: calc(10px + 1vmin);
+    padding: 0;
+    color:  #593f4b;
+    font-weight: 100;
+  }
+  button:hover {
+    color:  #bc1f68;
+    font-weight: 200;
+    text-decoration: none;
+    background-color: transparent;
+  }
+  .dropdownbutton{
+    margin-right: 20px;
+  }
+  
+  @media screen and (min-width: 1024px) {
+    .Header {
+      display: block;
+      text-align: right;
+    }
+    li {
+        display: block;
+      }
+  }

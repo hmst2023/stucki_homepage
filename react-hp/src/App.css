@@ -1,67 +1,58 @@
 .All {
-  display: grid;
-  grid-template-columns: 5fr 20fr 5fr;
+  width:100%;
+  display:grid;
   background-color: #eaeaea;
-
 }
-
-.Outlet {
-
-}
-
-.Homepage {
-  margin:auto;
+.ContentArea {
   background-image: url(https://res.cloudinary.com/***REMOVED***/image/upload/v1713465162/endlessness_zp9v3z.jpg);
   background-color: #342831;
   background-size:auto;
   background-position: top;
   background-attachment:scroll;
   background-repeat: repeat-y;
-  
+  min-height: 100vh;
+}
+
+
+@media screen and (min-width: 1024px) {
+  .All {
+    display: grid;
+    grid-template-columns: 10fr 20fr 10fr;
+  }
+}
+
+.CardCollection {
+  margin:auto;
   display: flex;
   justify-content:space-around;
   padding: 2%;
   flex-flow: row wrap;
-
+  overflow:hidden;
 }
 
-.Card {
-  border-radius: 12px;
-  padding: 15px;
-  margin: 20px;
+.Postform {
+  margin: 25px;
+  padding:25px;
+  background-color:aliceblue;
+  font-size: calc(10px + 1vmin);
+  line-height: calc(10px + 3vmin);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.Datenschutz {
+  margin: 25px;
+  padding:25px;
+  background-color:aliceblue;
+  font-size: calc(10px + 1vmin);
+  line-height: calc(10px + 3vmin);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.ListOfItems {
+    background-color: transparent;
+    position: relative;
+    display: block;
+    margin-right: 5px;
+    list-style-type:circle;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.BulletPoints {
+  display: list-item;
 }

@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from './hooks/useAuth';
 
 const Login = () => {
-  const {auth, setAuth} = useAuth();
+  const {setAuth} = useAuth();
   let navigate = useNavigate();
   const { state } = useLocation();
   const [apiError,setApiError] = useState();
@@ -49,26 +49,14 @@ const Login = () => {
     }
 
   return (
-    <div className='bg-aubergine p-8'>
-    <p className='text-xl font-bold'>
-          Melde dich bei deinem Account an
-          </p>
-      <p className='text-sm'>Kein Account? <Link to="/signup" className='text-blue-700'>Signup</Link></p>
-      <p>&nbsp;</p>
-      <div className='flex'>
+    <div className='Postform'>
       <form onSubmit={onFormSubmit} onReset={onFormReset}>
         E-Mail:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="email" required/><br/>
-        <p>&nbsp;</p>
         Passwort: &nbsp;&nbsp;<input type="password" name="password" required/><br/>
-        <p className='text-right text-xs text-red-500'>&nbsp; {apiError}</p>
-        <div className='text-right text-lg'>
-        <input className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" type="submit"/> <br/>
-        <span className='text-sm'>
-        <input className='py-2 px-4' type="reset"/>
-        </span>
-        </div>
+        <p >&nbsp; {apiError}</p>
+        <input type="submit"/> <br/>
+        <input type="reset"/>
       </form>
-      </div>
   </div>
   )
 }

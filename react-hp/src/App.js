@@ -10,6 +10,7 @@ import Datenschutz from './Datenschutz.js';
 import Impressum from './Impressum.js';
 import RequiredAuthentication from './RequiredAuthentication.js';
 import Modify from './Modify.js';
+import Test from './Test.js';
 import './App.css'
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="datenschutz" element={<Datenschutz/>}/>
         <Route path="impressum" element={<Impressum/>}/>
         <Route element={<RequiredAuthentication />}>
+          <Route path='test' element={<Test/>}/>
           <Route path="modify" element={<Modify/>}/>
         </Route>
       </Route>

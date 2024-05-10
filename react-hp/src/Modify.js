@@ -1,16 +1,18 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 
 const Modify = () => {
-  const {auth, setAuth} = useAuth();
-  const [text, setText] = useState('')
-  const [groups, setGroups] = useState([])
-  const [newGroup, setNewGroup] = useState([])
-  const [groupPainting, setGroupPainting] = useState(null)
-  const [groupSequenz, setGroupSequenz] = useState('')
-  const [media, setMedia] = useState(null)
+  const {auth} = useAuth();
+  const [title, setTitle] = useState('');
+  const [text, setText] = useState('');
+  const [url, setUrl] = useState('');
+  const [groups, setGroups] = useState([]);
+  const [newGroup, setNewGroup] = useState([]);
+  const [groupPainting, setGroupPainting] = useState('');
+  const [groupSequenz, setGroupSequenz] = useState('');
+  const [media, setMedia] = useState(null);
 
   const navigate = useNavigate();
 
@@ -18,7 +20,7 @@ const Modify = () => {
     fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups')
     .then((response)=>response.json())
     .then((data)=>setGroups(data))
-    },[])
+    },[groupPainting, groupSequenz])
   const handleNewGroup = async (event) => {
     event.preventDefault()
     const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups',{
@@ -41,6 +43,7 @@ const Modify = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    if (title) { formData.append("title", title);}
     if (text) { formData.append("text", text);}
     if (groupPainting) {formData.append("group_painting", groupPainting);}
     if (groupSequenz) {formData.append("group_sequenz", groupSequenz);}
@@ -58,17 +61,19 @@ const Modify = () => {
   }
   
   return (
-    <div>token: {auth}<br/>
+    <div className='Postform'>
     <p>Create a new Entry:</p>
     <form onSubmit={handleSubmit}>
+      <label>title: <input type='text' name='title' onChange={e=>setTitle(e.target.value)}/></label><br/>
       <label>text: <input type="text" name="text" onChange={e=>setText(e.target.value)}/></label><br/>
+      <label>url: <input type="text" name="url" onChange={e=>setUrl(e.target.value)}/></label><br/>
       <label>Group Painting:
         <select value={groupPainting} onChange={event=>setGroupPainting(event.target.value)}>
           <option value={null}></option>
-          {groups.map((e1) => {
+          {groups.map((e1, i) => {
             if (e1.group_type==="painting") {
               return (
-                  <option value={e1.name}>{e1.name}</option>
+                  <option key={'paint'+i} value={e1.name}>{e1.name}</option>
               )
             }}
             )
@@ -85,10 +90,10 @@ const Modify = () => {
       <label>Group Sequenz:
         <select value={groupSequenz} onChange={event=>setGroupSequenz(event.target.value)}>
           <option value={null}></option>
-          {groups.map((e1) => {
+          {groups.map((e1, i) => {
             if (e1.group_type==="sequenz") {
               return (
-                  <option value={e1.name}>{e1.name}</option>
+                  <option key={'seq'+i} value={e1.name}>{e1.name}</option>
               )
             }}
             )
@@ -105,9 +110,6 @@ const Modify = () => {
       <input type="file" name="media" onChange={e=>setMedia(e.target.files[0])}/><br/>
       <button type='submit' onClick={handleSubmit}>Submit</button>
     </form>
-    GroupPainting = {groupPainting} <br/>
-    GroupSequenz = {groupSequenz}
-    <p><Link href="/groups">Display groups</Link></p>
     </div>
   )
 }

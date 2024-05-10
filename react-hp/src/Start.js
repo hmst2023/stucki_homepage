@@ -1,11 +1,11 @@
 import React from 'react'
-import { useState, useEffect, useRef } from 'react'
-import Card from './components/Card'
+import { useState, useEffect } from 'react'
+import CardCollection from './components/CardCollection';
 
 const Start = () => {
   const [entries, setEntries] = useState([]);
   const [error, setError] = useState('');
-
+  
   const getEntries = async () => {
     const timeout = 12000;
     const controller = new AbortController();
@@ -37,26 +37,7 @@ const Start = () => {
     },[]);
   
   return (
-      <div className='Homepage'>
-        {entries!==undefined && entries.map((entry) => {
-          const {_id, text, video, img, group_painting, group_sequenz, timestamp} = entry
-          return (
-            <Card
-              key={_id}
-              id={_id}
-              text={text}
-              img={img}
-              video={video}
-              group_painting={group_painting}
-              group_sequenz={group_sequenz}
-              timestamp={timestamp}
-              />
-          );
-        }
-
-
-        )}
-      </div>
+    <CardCollection items={entries}/>
   )
 }
 
