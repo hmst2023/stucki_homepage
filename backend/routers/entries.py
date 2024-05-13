@@ -52,7 +52,6 @@ def post_new_entry(request:Request, user_id=Depends(auth_handler.auth_wrapper), 
             database_entry['img'] = result.get('url')
             database_entry['img_id'] = result.get('public_id')
         if 'video' in guess_type(entry.media_file.filename)[0]:
-            print(entry.media_file.headers)
             temp_file = NamedTemporaryFile(delete=False)
             output_file = NamedTemporaryFile(delete=False, suffix=".mp4")
             with temp_file as f:
@@ -71,14 +70,12 @@ def post_new_entry(request:Request, user_id=Depends(auth_handler.auth_wrapper), 
 
     if entry.group_painting:
         group_id = request.app.db['groups'].find_one({'name': entry.group_painting})['_id']
-        request.app.db['groups'].update_one({"_id": group_id},{'$push':{'members': new_msg.inserted_id}})
         request.app.db['groups'].find_one({"_id": group_id})
         request.app.db['entries'].update_one({"_id": new_msg.inserted_id}, {
             '$set': {'group_painting': group_id}})
 
     if entry.group_sequenz:
         group_id = request.app.db['groups'].find_one({'name': entry.group_sequenz})['_id']
-        request.app.db['groups'].update_one({"_id": group_id},{'$push':{'members': new_msg.inserted_id}})
         request.app.db['groups'].find_one({"_id": group_id})
         request.app.db['entries'].update_one({"_id": new_msg.inserted_id}, {
             '$set': {'group_sequenz': group_id}})
@@ -136,16 +133,6 @@ def delete_single_entry(request: Request, entry_id:str, user_id=Depends(auth_han
     modified_arrays = 0
     deleted_pics = 0
     if entry := request.app.db['entries'].find_one({"_id": ObjectId(entry_id)}):
-        if 'group_painting' in entry and entry['group_painting'] is not None:
-            msg = request.app.db['groups'].update_one({"_id": entry['group_painting']},
-                                                      {'$pull':{'members':ObjectId(entry_id)}})
-            modified_arrays += msg.modified_count
-
-        if 'group_sequenz' in entry and entry['group_sequenz'] is not None:
-            msg = request.app.db['groups'].update_one({"_id": entry['group_sequenz']},
-                                                      {'$pull':{'members': ObjectId(entry_id)}})
-            modified_arrays += msg.modified_count
-
         if 'img' in entry and entry['img'] is not None:
             cloudinary_response = destroy(entry['img_id'])
             if cloudinary_response['result'] == "ok":
@@ -164,7 +151,7 @@ def delete_single_entry(request: Request, entry_id:str, user_id=Depends(auth_han
 @router.patch("/{entry_id}", response_description="patch an entry")
 def patch_entry(request: Request, entry_id: str, entry:PostEntry = Depends(),
                 user_id=Depends(auth_handler.auth_wrapper)) -> None:
-    update_entry = {'timestamp': datetime.now()}
+    update_entry = dict()  # {'timestamp': datetime.now()}
     if entry.text:
         if entry.text == "None":
             update_entry['text'] = None
@@ -182,6 +169,16 @@ def patch_entry(request: Request, entry_id: str, entry:PostEntry = Depends(),
             update_entry['url'] = entry.url
 
     if entry.media_file:
+        old_entry = request.app.db['entries'].find_one({"_id":ObjectId(entry_id)})
+        if delete := 'img' in old_entry and old_entry['img_id'] or 'video' in old_entry and old_entry['video_id']:
+            cloudinary_response = destroy(delete)
+            if cloudinary_response['result'] == "ok":
+                print('deleted')
+                update_entry['img'] = None
+                update_entry['img_id'] = None
+                update_entry['video'] = None
+                update_entry['img_id'] = None
+
         if entry.media_file == "None":
             update_entry['img'] = None
             update_entry['img_id'] = None
@@ -222,7 +219,6 @@ def patch_entry(request: Request, entry_id: str, entry:PostEntry = Depends(),
     if entry.group_painting:
         if entry.group_painting != "None":
             group_id = request.app.db['groups'].find_one({'name': entry.group_painting})['_id']
-            request.app.db['groups'].update_one({"_id": group_id},{'$push':{'members': ObjectId(entry_id)}})
             update_entry['group_painting'] = ObjectId(group_id)
         else:
             update_entry['group_painting'] = None
@@ -230,7 +226,6 @@ def patch_entry(request: Request, entry_id: str, entry:PostEntry = Depends(),
     if entry.group_sequenz:
         if entry.group_sequenz != "None":
             group_id = request.app.db['groups'].find_one({'name': entry.group_sequenz})['_id']
-            request.app.db['groups'].update_one({"_id": group_id},{'$push':{'members': ObjectId(entry_id)}})
             update_entry['group_sequenz'] = ObjectId(group_id)
         else:
             update_entry['group_sequenz'] = None

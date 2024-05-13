@@ -19,9 +19,9 @@ const Card = ({id, title, text, img, video, timestamp, url}) => {
     return (
       <div className="Card" style={{...cardStyle, width:cardWidth, height: 'fit-content',backgroundColor : possibleCardColor} }>
         <Link to={"/entries/"+id } state={{ color: possibleCardColor }}>
-          {img && <div><img src={img} height="auto" width="auto" alt={title}/></div>}
+          {img && <div><img src={img.slice(0, img.indexOf('upload/')) +`upload/c_fill,e_sharpen,w_${smallscreen ? 180 : 450}/`+img.slice(img.indexOf('upload/')+6)} height="auto" width="auto" alt={title}/></div>}
           <p>
-            {video && <video  width="auto" height="auto" playsInline loop muted onMouseOver={event => event.target.play()} onMouseOut={event => event.target.pause()} >
+            {video && <video  width="auto" height="auto" autoPlay playsInline loop muted onMouseOver={event => event.target.play()} onMouseOut={event => event.target.pause()} >
                         <source src={video} type="video/mp4"/>
                       </video>}
           </p>
@@ -33,7 +33,8 @@ const Card = ({id, title, text, img, video, timestamp, url}) => {
     </div>)     
   }
   function MediaOnly(){
-    return img ? <Link to={"/entries/"+id} reloadDocument ><img className="Card" src={img} style={cardStyle} height="auto" width={cardWidth} alt={title}/></Link> : <Link to={"/entries/"+id}> <video  width={cardWidth} height="auto" playsInline muted loop onMouseOver={event => event.target.play()} onMouseOut={event => event.target.pause()}>
+
+    return img ? <Link to={"/entries/"+id} reloadDocument ><img className="Card" src={img.slice(0, img.indexOf('upload/')) +`upload/c_fill,e_sharpen,w_${smallscreen ? 180 : 450}/`+img.slice(img.indexOf('upload/')+6)} style={cardStyle} height="auto" width={cardWidth} alt={title}/></Link> : <Link to={"/entries/"+id}> <video  width={cardWidth} height="auto" autoPlay playsInline muted loop onMouseOver={event => event.target.play()} onMouseOut={event => event.target.pause()}>
     <source src={video} type="video/mp4"/>
   </video></Link>
   }

@@ -9,7 +9,7 @@ import TermsOfUse from './TermsOfUse.js';
 import Datenschutz from './Datenschutz.js';
 import Impressum from './Impressum.js';
 import RequiredAuthentication from './RequiredAuthentication.js';
-import Modify from './Modify.js';
+import Post from './Post.js';
 import Test from './Test.js';
 import './App.css'
 
@@ -26,7 +26,7 @@ function App() {
         <Route path="impressum" element={<Impressum/>}/>
         <Route element={<RequiredAuthentication />}>
           <Route path='test' element={<Test/>}/>
-          <Route path="modify" element={<Modify/>}/>
+          <Route path="post" element={<Post/>}/>
         </Route>
       </Route>
     </Routes>

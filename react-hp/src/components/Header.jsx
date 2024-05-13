@@ -54,7 +54,7 @@ const Header = () => {
           <li><Link to="/impressum">Impressum</Link></li>
           <li><Link to="/datenschutz">Datenschutz</Link></li>
           {auth && <>
-                      <li style={{marginTop:'40px'}}><Link to="modify">Post</Link></li>
+                      <li style={{marginTop:'40px'}}><Link to="post">Post</Link></li>
                       <li><LogButton/></li>
                       </>}
 
