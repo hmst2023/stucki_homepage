@@ -1,8 +1,6 @@
 from io import BytesIO
-from dataclasses import asdict
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 from cloudinary.uploader import upload, destroy
 from PIL import Image
 from datetime import datetime

@@ -51,7 +51,7 @@ const Entry = () => {
 
   const handleNewGroup = async (event) => {
     event.preventDefault()
-    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups',{
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -128,7 +128,7 @@ const Entry = () => {
   
   useEffect(()=>{
     if (auth!==''){
-    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups')
+    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/')
     .then((response)=>response.json())
     .then((data)=>setGroups(data))
     }
@@ -208,15 +208,13 @@ const Entry = () => {
         </div>
     </div>
   </div>
-  {
-   !auth && <>
-  {entry.group_painting_members && entry.group_painting_members.length>0 && <div className='GroupExplanation' style={{color: state ? state.color : possibleCardColor}}>occurences:</div>}
+
+  {entry.group_painting_members && entry.group_painting_members.length>0 && <div className='GroupExplanation' style={{color: state ? state.color : possibleCardColor.current}}>occurences:</div>}
   {entry.group_painting_members && entry.group_painting_members.length>0 && <CardCollection items={entry.group_painting_members}></CardCollection>}
 
-  {entry.group_sequenz_members && entry.group_sequenz_members.length>0 && <div className='GroupExplanation' style={{color: state ? state.color : possibleCardColor}}>belongs to:</div>}
+  {entry.group_sequenz_members && entry.group_sequenz_members.length>0 && <div className='GroupExplanation' style={{color: state ? state.color : possibleCardColor.current}}>belongs to:</div>}
   {entry.group_sequenz_members && entry.group_sequenz_members.length>0 &&<CardCollection items={entry.group_sequenz_members}></CardCollection>}
 
-  </>}
 </>
 
 

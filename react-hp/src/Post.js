@@ -17,13 +17,13 @@ const Post = () => {
   const navigate = useNavigate();
 
   useEffect(()=>{
-    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups')
+    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/')
     .then((response)=>response.json())
     .then((data)=>setGroups(data))
     },[groupPainting, groupSequenz])
   const handleNewGroup = async (event) => {
     event.preventDefault()
-    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups',{
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -49,7 +49,7 @@ const Post = () => {
     if (groupSequenz) {formData.append("group_sequenz", groupSequenz);}
     if (media) {formData.append("media_file", media);}
 
-    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/entries',{
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/entries/',{
       method:'POST',
       headers: {
               Authorization : `Bearer ${auth}`

@@ -12,7 +12,7 @@ const Start = () => {
     const id2 = setTimeout(() => controller.abort(), timeout);
     
     try {
-      const res = await fetch(process.env.REACT_APP_BACKEND_LOCATION+'/entries', {
+      const res = await fetch(process.env.REACT_APP_BACKEND_LOCATION+'/entries/', {
         signal: controller.signal,
         method:"GET",
       });

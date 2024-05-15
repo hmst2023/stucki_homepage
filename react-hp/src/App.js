@@ -24,8 +24,8 @@ function App() {
         <Route path="termsofuse" element={<TermsOfUse/>}/>
         <Route path="datenschutz" element={<Datenschutz/>}/>
         <Route path="impressum" element={<Impressum/>}/>
+        <Route path='test' element={<Test/>}/>
         <Route element={<RequiredAuthentication />}>
-          <Route path='test' element={<Test/>}/>
           <Route path="post" element={<Post/>}/>
         </Route>
       </Route>

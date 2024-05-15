@@ -24,7 +24,7 @@ export const AuthProvider = ({children}) => {
           });
           if (!res.ok){
             setAuth('');
-            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"+ ";path=/";
+            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
             let errorResponse = await res.json();
             console.log(errorResponse["detail"]);
           } else {
