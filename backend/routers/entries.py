@@ -6,7 +6,7 @@ from PIL import Image
 from datetime import datetime
 from typing import List
 from .authentification import Authorization
-from .models import PostEntry, GetSingleEntry, GetEntries
+from .models import PostEntry, GetSingleEntry, GetEntries, PostEntry2
 from bson import ObjectId
 from mimetypes import guess_type
 from tempfile import NamedTemporaryFile
@@ -15,6 +15,48 @@ import ffmpeg
 
 router = APIRouter()
 auth_handler = Authorization()
+
+
+@router.post("/2")
+def post_reworked(request: Request, entry:PostEntry2, user_id=Depends(auth_handler.auth_wrapper)):
+    if all(i is None for i in (entry.media_file, entry.text)):
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content='empty request')
+
+    database_entry = {'timestamp': datetime.now()}
+
+    if entry.title:
+        database_entry['title'] = entry.title
+
+    if entry.text:
+        database_entry['text'] = entry.text
+
+    if entry.url:
+        database_entry['url'] = entry.url
+
+    if entry.media_file:
+        if entry.media_file['resource_type'] == 'image':
+            database_entry['img'] = entry.media_file['secure_url']
+            database_entry['img_id'] = entry.media_file['public_id']
+        if entry.media_file['resource_type'] == 'video':
+            database_entry['video'] = entry.media_file['secure_url']
+            database_entry['video_id'] = entry.media_file['public_id']
+
+    new_msg = request.app.db['entries'].insert_one(database_entry)
+
+    if entry.group_painting:
+        group_id = request.app.db['groups'].find_one({'name': entry.group_painting})['_id']
+        request.app.db['groups'].find_one({"_id": group_id})
+        request.app.db['entries'].update_one({"_id": new_msg.inserted_id}, {
+            '$set': {'group_painting': group_id}})
+
+    if entry.group_sequenz:
+        group_id = request.app.db['groups'].find_one({'name': entry.group_sequenz})['_id']
+        request.app.db['groups'].find_one({"_id": group_id})
+        request.app.db['entries'].update_one({"_id": new_msg.inserted_id}, {
+            '$set': {'group_sequenz': group_id}})
+
+    created_msg = request.app.db['entries'].find_one({"_id": new_msg.inserted_id})
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content=str(created_msg))
 
 
 @router.post("/")
@@ -47,7 +89,7 @@ def post_new_entry(request:Request, user_id=Depends(auth_handler.auth_wrapper), 
             img.save(output_img,"JPEG")
             output_img.seek(0)
             result = upload(output_img)
-            database_entry['img'] = result.get('url')
+            database_entry['img'] = result.get('secure_url')
             database_entry['img_id'] = result.get('public_id')
         if 'video' in guess_type(entry.media_file.filename)[0]:
             temp_file = NamedTemporaryFile(delete=False)
@@ -61,7 +103,7 @@ def post_new_entry(request:Request, user_id=Depends(auth_handler.auth_wrapper), 
                 .run(overwrite_output=True)
             )
             result = upload(output_file.name, resource_type="video")
-            database_entry['video'] = result.get('url')
+            database_entry['video'] = result.get('secure_url')
             database_entry['video_id'] = result.get('public_id')
 
     new_msg = request.app.db['entries'].insert_one(database_entry)
@@ -196,7 +238,7 @@ def patch_entry(request: Request, entry_id: str, entry:PostEntry = Depends(),
             img.save(output_img,"JPEG")
             output_img.seek(0)
             result = upload(output_img)
-            update_entry['img'] = result.get('url')
+            update_entry['img'] = result.get('secure_url')
             update_entry['img_id'] = result.get('public_id')
 
         elif 'video' in guess_type(entry.media_file.filename)[0]:
@@ -211,7 +253,7 @@ def patch_entry(request: Request, entry_id: str, entry:PostEntry = Depends(),
                 .run(overwrite_output=True)
             )
             result = upload(output_file.name, resource_type="video")
-            update_entry['video'] = result.get('url')
+            update_entry['video'] = result.get('secure_url')
             update_entry['video_id'] = result.get('public_id')
 
     if entry.group_painting:

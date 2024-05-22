@@ -1,12 +1,13 @@
-from fastapi import APIRouter, status, Body, HTTPException, Request, Depends
+import datetime
+
+from fastapi import APIRouter, Body, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 from .authentification import Authorization
-from .models import LoginBase, UserBase
+from .models import LoginBase
 from bson.objectid import ObjectId
+from cloudinary.utils import sign_request
 
 router = APIRouter()
-
 auth_handler = Authorization()
 
 
@@ -37,3 +38,13 @@ async def refresh_token(request: Request, user_id=Depends(auth_handler.auth_wrap
 #     user = msg_collection.insert_one(new_user)
 #     created_user = msg_collection.find_one({"_id": user.inserted_id})
 #     return JSONResponse(status_code=status.HTTP_201_CREATED, content=str(created_user))
+
+
+@router.post('/signature')
+def get_cloudinary_signature(request:Request, params_to_sign: dict, user_id=Depends(auth_handler.auth_wrapper)) -> dict:
+    db_user = request.app.db['Users']
+    user = db_user.find_one({'_id':ObjectId(user_id)})
+    if user:
+        signature = sign_request(params_to_sign, dict())
+        return signature
+    raise HTTPException(status_code=404, detail='no user')

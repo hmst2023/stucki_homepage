@@ -55,6 +55,7 @@ const Header = () => {
           <li><Link to="/datenschutz">Datenschutz</Link></li>
           {auth && <>
                       <li style={{marginTop:'40px'}}><Link to="post">Post</Link></li>
+                      <li><Link to="post2">Post2</Link></li>
                       <li><LogButton/></li>
                       </>}
 

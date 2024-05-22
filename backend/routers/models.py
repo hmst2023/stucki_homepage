@@ -45,6 +45,15 @@ PyObjectId = Annotated[
 ]
 
 
+class PostEntry2(BaseModel):
+    title: Optional[str] = None
+    text: Optional[str] = None
+    url: Optional[str] = None
+    group_painting: Optional[str] = None
+    group_sequenz: Optional[str] = None
+    media_file: Optional[dict] = None
+
+
 class GroupTypes(str, Enum):
     painting = 'painting'
     sequenz = 'sequenz'

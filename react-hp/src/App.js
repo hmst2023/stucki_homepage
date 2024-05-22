@@ -4,13 +4,13 @@ import Layout from './Layout';
 import Start from './Start.js';
 import Login from './Login.js';
 import Entry from './Entry.js';
-import Group from './Group.js';
 import TermsOfUse from './TermsOfUse.js';
 import Datenschutz from './Datenschutz.js';
 import Impressum from './Impressum.js';
 import RequiredAuthentication from './RequiredAuthentication.js';
 import Post from './Post.js';
-import Test from './Test.js';
+import Post2 from './Post2.js';
+
 import './App.css'
 
 function App() {
@@ -20,13 +20,12 @@ function App() {
         <Route path="/" element={<Start/>}/>
         <Route path="login" element={<Login/>}/>
         <Route path="entries/:id" element={<Entry/>}/>
-        <Route path="group/:id" element={<Group/>}/>
         <Route path="termsofuse" element={<TermsOfUse/>}/>
         <Route path="datenschutz" element={<Datenschutz/>}/>
         <Route path="impressum" element={<Impressum/>}/>
-        <Route path='test' element={<Test/>}/>
-        <Route element={<RequiredAuthentication />}>
+        <Route element={<RequiredAuthentication/>}>
           <Route path="post" element={<Post/>}/>
+          <Route path='post2' element={<Post2/>}/>
         </Route>
       </Route>
     </Routes>
