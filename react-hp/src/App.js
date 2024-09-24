@@ -10,7 +10,7 @@ import Impressum from './Impressum.js';
 import RequiredAuthentication from './RequiredAuthentication.js';
 import Post from './Post.js';
 import Post2 from './Post2.js';
-
+import Canvas from './Canvas.js';
 import './App.css'
 
 function App() {
@@ -26,6 +26,7 @@ function App() {
         <Route element={<RequiredAuthentication/>}>
           <Route path="post" element={<Post/>}/>
           <Route path='post2' element={<Post2/>}/>
+          <Route path='canvas' element={<Canvas/>}/>
         </Route>
       </Route>
     </Routes>

@@ -1,6 +1,4 @@
-import os
 from fastapi import FastAPI
-from pymongo import MongoClient
 import cloudinary
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,22 +8,11 @@ from routers.groups import router as group_router
 from routers.media import router as media_router
 from decouple import config
 from setup import DEVELOPER_MODE
-from contextlib import asynccontextmanager
 
 
-if DEVELOPER_MODE:
-    DB_URL = config('DB_URL', cast=str)
-    DB_NAME = config('DB_NAME', cast=str)
-    CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', cast=str)
-    CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', cast=str)
-    CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET', cast=str)
-else:
-    DB_URL = os.getenv("DB_URL")
-    DB_NAME = os.getenv("DB_NAME")
-    CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
-    CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
-    CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
-
+CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', cast=str)
+CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', cast=str)
+CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET', cast=str)
 
 cloudinary.config(
         cloud_name=CLOUDINARY_CLOUD_NAME,
@@ -34,14 +21,7 @@ cloudinary.config(
         secure=True)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.client = MongoClient(DB_URL)
-    app.db = app.client[DB_NAME]
-    yield
-    app.client.close()
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"],
                    allow_headers=["*"])

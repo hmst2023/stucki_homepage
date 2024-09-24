@@ -22,7 +22,7 @@ const UploadWidget = ({ receivedUrl }) => {
 
   useEffect(() => {
     const options = {
-        cloudName: "***REMOVED***",
+        cloudName: "du2jqqdk2",
         cropping: 'true',
         croppingCoordinatesMode: 'custom',
         uploadSignature: getSignature,
