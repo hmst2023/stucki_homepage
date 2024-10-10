@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import './Entry.css'
 import CardCollection from './components/CardCollection';
+import CheckboxList from './components/CheckboxList';
+import UploadWidget from './components/uploadWidget';
 
 const Entry = () => {
   const {auth} = useAuth();
@@ -64,10 +66,15 @@ const Entry = () => {
       setNewEntry({...newEntry, groupPainting: newGroup.name})
     } else {
       setNewEntry({...newEntry, groupSequenz: newGroup.name})
-    }
-    
+    } 
   }
-  
+  const receiveChangedMaterial = (e)=>{
+    setNewEntry({...newEntry, material: e})
+  }
+  const handleEnteredUrl = (url)=>{
+    setNewEntry({...newEntry, media_file: url});
+  }
+
 
   function handleDelete () {
     fetch(process.env.REACT_APP_BACKEND_LOCATION + `/entries/${entry._id}`,{
@@ -83,25 +90,18 @@ const Entry = () => {
   const handleUpdate = async(e)=>{
     if (e.target.form.checkValidity()){
       e.preventDefault()
-      const formData = new FormData();
-      if (newEntry.title) { formData.append("title", newEntry.title);}
-      if (newEntry.text) { formData.append("text", newEntry.text);}
-      if (newEntry.url) { formData.append("url", newEntry.url);}
-      if (newEntry.groupPainting) {formData.append("group_painting", newEntry.groupPainting);}
-      if (newEntry.groupSequenz) {formData.append("group_sequenz", newEntry.groupSequenz);}
-      if (newEntry.media) {formData.append("media_file", newEntry.media);}
       const timeout = 8000;
       const controller = new AbortController();
       const id2 = setTimeout(() => controller.abort(), timeout);
       try {
-        console.log(typeof(formData.get("text")))
       const res = await fetch(process.env.REACT_APP_BACKEND_LOCATION + "/entries/"+id, {
         method:"PATCH",
         signal:controller.signal,
         headers: {
+          'Content-Type':'application/json',
             Authorization : `Bearer ${auth}`,
           },
-        body: formData
+        body: JSON.stringify(newEntry)
         })
       navigate("/")
       } catch (error) {
@@ -122,7 +122,7 @@ const Entry = () => {
 
   
   var TimestampAndTitle =  () => {
-    var temp = new Date(entry.timestamp)
+    var temp = new Date(entry.timestamp ? entry.timestamp : null)
     return <div className='TimestampAndTitle'>{(entry.title && entry.title + ', ')} {temp.toLocaleDateString()}</div>
   }
   
@@ -146,57 +146,64 @@ const Entry = () => {
         <div className='Text'>
           <TimestampAndTitle/>
           {entry.text &&<p>{entry.text}</p>}
-          {entry.url && <Link to={entry.url}>{entry.url}</Link>}
+          {entry.url && <p><Link to={entry.url}>{entry.url}</Link></p>}
+          {entry.url2 && <p><Link to={entry.url2}>{entry.url2}</Link></p>}
           {auth && <>
+                    {!newEntry.media_file && <UploadWidget receivedUrl={handleEnteredUrl}/>}
+
                     <form>
-                      <input type='file' name="media" onChange={e=>setNewEntry({...newEntry, media:e.target.files[0]})}/>
                     <p>Media:{entry.img} {entry.video} </p>
-                    <button type="button" name="media" onClick={() =>{setNewEntry({...newEntry, media: "None"})}}>Remove Media</button>
-            <p>Title: {entry.title}</p><input type="text" name="title" rows="4" cols="80" value={newEntry.title ? newEntry.title : entry.title} onChange={onChange}/>
-            <p>Text: {entry.text}</p><textarea name="text" rows="4" cols="80" value={newEntry.text ? newEntry.text : entry.text} onChange={onChange}/>
-            <p>URL: {entry.url}<input type='text' name="url" value={newEntry.url ? newEntry.url :entry.url} onChange={onChange}/></p>
-            <label>Group Painting: {entry.group_painting}
-        <select value={newEntry.groupPainting} onChange={event=>setNewEntry({...newEntry, groupPainting: event.target.value})}>
-        <option value={null}></option>
-          <option value="None">None</option>
-          {groups.map((e1, i) => {
-            if (e1.group_type==="painting") {
-              return (
-                  <option key={'paint'+i} value={e1.name}>{e1.name}</option>
-              )
-            }}
-            )
-          }
-          <option value="new">new...</option>
-         </select>
-      </label><br/>
-      {newEntry.groupPainting==='new' &&
-      <form>
-        <label>New Group<input type="text" name="name" onChange={e=>setNewGroup({[e.target.name]: e.target.value, group_type: "painting"})}/></label>
-        <button type='submit' onClick={handleNewGroup}>create</button>
-      </form>
-    }
-                        <label>Group Sequenz: {entry.group_sequenz}
-        <select value={newEntry.groupSequenz} onChange={event=>setNewEntry({...newEntry, groupSequenz: event.target.value})}>
-        <option value={null}></option>
-          <option value="None">None</option>
-          {groups.map((e1, i) => {
-            if (e1.group_type==="sequenz") {
-              return (
-                  <option key={'sequenz'+i} value={e1.name}>{e1.name}</option>
-              )
-            }}
-            )
-          }
-          <option value="new">new...</option>
-         </select>
-      </label><br/>
-      {newEntry.groupSequenz==='new' &&
-      <form>
-        <label>New Group<input type="text" name="name" onChange={e=>setNewGroup({[e.target.name]: e.target.value, group_type: "sequenz"})}/></label>
-        <button type='submit' onClick={handleNewGroup}>create</button>
-      </form>
-    }
+                    <button type="button" name="media" onClick={() =>{setNewEntry({...newEntry, media_file: "None"})}}>Remove Media</button>
+                    <p>Title: {entry.title}</p><input type="text" name="title" rows="4" cols="80" value={newEntry.title ? newEntry.title : entry.title} onChange={onChange}/>
+                    <p>Text: {entry.text}</p><textarea name="text" rows="4" cols="80" value={newEntry.text ? newEntry.text : entry.text} onChange={onChange}/>
+                    <p>URL: {entry.url}<input type='text' name="url" value={newEntry.url ? newEntry.url :entry.url} onChange={onChange}/></p>
+                    <p>URL2: {entry.url2}<input type='text' name="url2" value={newEntry.url2 ? newEntry.url2 :entry.url2} onChange={onChange}/></p>
+                    <p>materials:<br/>
+                      {entry.material}<br/>
+                      <CheckboxList originalValue={entry.material} sendChangedValues={receiveChangedMaterial}/>
+                    </p>
+                      <label>Group Painting: {entry.group_painting}
+                        <select value={newEntry.groupPainting} onChange={event=>setNewEntry({...newEntry, groupPainting: event.target.value})}>
+                          <option value={null}></option>
+                          <option value="None">None</option>
+                              {groups.map((e1, i) => {
+                                  if (e1.group_type==="painting") {
+                                    return (
+                                      <option key={'paint'+i} value={e1.name}>{e1.name}</option>
+                                    )
+                                  }}
+                                )
+                              }
+                          <option value="new">new...</option>
+                        </select>
+                      </label><br/>
+                      {newEntry.groupPainting==='new' &&
+                        <form>
+                          <label>New Group<input type="text" name="name" onChange={e=>setNewGroup({[e.target.name]: e.target.value, group_type: "painting"})}/></label>
+                          <button type='submit' onClick={handleNewGroup}>create</button>
+                        </form>
+                      }
+                      <label>Group Sequenz: {entry.group_sequenz}
+                        <select value={newEntry.groupSequenz} onChange={event=>setNewEntry({...newEntry, groupSequenz: event.target.value})}>
+                        <option value={null}></option>
+                          <option value="None">None</option>
+                          {groups.map((e1, i) => {
+                            if (e1.group_type==="sequenz") {
+                              return (
+                                  <option key={'sequenz'+i} value={e1.name}>{e1.name}</option>
+                              )
+                            }}
+                            )
+                          }
+                          <option value="new">new...</option>
+                        </select>
+                      </label><br/>
+                    {newEntry.groupSequenz==='new' &&
+                      <form>
+                        <label>New Group<input type="text" name="name" onChange={e=>setNewGroup({[e.target.name]: e.target.value, group_type: "sequenz"})}/></label>
+                        <button type='submit' onClick={handleNewGroup}>create</button>
+                      </form>
+                    }
 
             <button type="submit" onClick={handleUpdate}>update entry</button>
             &nbsp;&nbsp;

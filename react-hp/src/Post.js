@@ -1,117 +1,102 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React,{useState, useEffect} from 'react'
+import UploadWidget from './components/uploadWidget';
 import useAuth from './hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import CheckboxList from './components/CheckboxList';
+import GroupList from './components/GroupList';
 
-const Post = () => {
+const Post2 = () => {
   const {auth} = useAuth();
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [url, setUrl] = useState('');
+  const [newEntry, setNewEntry] = useState({});
   const [groups, setGroups] = useState([]);
-  const [newGroup, setNewGroup] = useState([]);
-  const [groupPainting, setGroupPainting] = useState('');
-  const [groupSequenz, setGroupSequenz] = useState('');
-  const [media, setMedia] = useState(null);
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  useEffect(()=>{
-    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/')
-    .then((response)=>response.json())
-    .then((data)=>setGroups(data))
-    },[groupPainting, groupSequenz])
-  const handleNewGroup = async (event) => {
-    event.preventDefault()
-    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/',{
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/entries/',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
         Authorization : `Bearer ${auth}`
       },
-      body:JSON.stringify(newGroup)
+      body:JSON.stringify(newEntry)
     })
-    const data = await response.json()
-    if (newGroup.group_type==='painting'){
-      setGroupPainting(newGroup.name)
-    } else {
-      setGroupSequenz(newGroup.name)
-    }
-    
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    if (title) { formData.append("title", title);}
-    if (text) { formData.append("text", text);}
-    if (groupPainting) {formData.append("group_painting", groupPainting);}
-    if (groupSequenz) {formData.append("group_sequenz", groupSequenz);}
-    if (media) {formData.append("media_file", media);}
-
-    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/entries/',{
-      method:'POST',
-      headers: {
-              Authorization : `Bearer ${auth}`
-            }, 
-      body: formData
-    })
-    const data = await response.json()
+    await response.json()
     navigate('/', {replace:true})
   }
+
+  const handleDeleteMedia = async (e)=>{
+    e.preventDefault()
+    const response = await fetch(process.env.REACT_APP_BACKEND_LOCATION + '/media/'+ newEntry.media.public_id+'/'+newEntry.media.resource_type ,{
+      method:'DELETE',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization : `Bearer ${auth}`
+      }
+    })
+    if (response.ok){
+      setNewEntry({...newEntry, media_file: null})
+    }
+
+  }
+  const handleEnteredUrl = (url)=>{
+    setNewEntry({...newEntry, media_file: url});
+  }
+
+  const receiveChangedMaterial = (e)=>{
+    setNewEntry({...newEntry, material: e})
+    console.log(newEntry)
+  }
+
   
+  const handleSelectionChange = (val, type)=>{
+    if (type==='sequenz'){
+      setNewEntry({...newEntry, groupSequenz: val})
+    } else {
+      setNewEntry({...newEntry, groupPainting: val})
+    }
+  }
+  const handleChangedValue = (e)=>{
+    setNewEntry({...newEntry, [e.target.name]:e.target.value})
+  }
+  
+  useEffect(()=>{
+    fetch(process.env.REACT_APP_BACKEND_LOCATION + '/groups/')
+    .then((response)=>response.json())
+    .then((data)=>setGroups(data))
+    },[newEntry.groupPainting, newEntry.groupSequenz])
+
+
+
   return (
     <div className='Postform'>
-    <p>Create a new Entry:</p>
-    <form onSubmit={handleSubmit}>
-      <label>title: <input type='text' name='title' onChange={e=>setTitle(e.target.value)}/></label><br/>
-      <label>text: <input type="text" name="text" onChange={e=>setText(e.target.value)}/></label><br/>
-      <label>url: <input type="text" name="url" onChange={e=>setUrl(e.target.value)}/></label><br/>
-      <label>Group Painting:
-        <select value={groupPainting} onChange={event=>setGroupPainting(event.target.value)}>
-          <option value={null}></option>
-          {groups.map((e1, i) => {
-            if (e1.group_type==="painting") {
-              return (
-                  <option key={'paint'+i} value={e1.name}>{e1.name}</option>
-              )
-            }}
-            )
-          }
-          <option value="new">new...</option>
-         </select>
-      </label><br/>
-         {groupPainting==='new' &&
-      <form>
-        <label>New Group<input type="text" name="name" onChange={e=>setNewGroup({[e.target.name]: e.target.value, group_type: "painting"})}/></label>
-        <button type='submit' onClick={handleNewGroup}>create</button>
+      {!newEntry.media_file && <UploadWidget receivedUrl={handleEnteredUrl}/>}
+      <form onSubmit={handleSubmit}>
+      {newEntry.media_file && 
+      <>
+        <label>media:</label>{'...' + newEntry.media_file.secure_url.slice(40)}<br/>
+        <img src={newEntry.media_file.thumbnail_url} alt="your uploaded file"/><br/>
+        <button onClick={handleDeleteMedia}>delete media</button><br/>
+      </>}
+      <label>title: <input type='text' name='title' onChange={handleChangedValue}/></label><br/>
+      <label>text: <input type="text" name="text" onChange={handleChangedValue}/></label><br/>
+      <label>url: <input type="text" name="url" onChange={handleChangedValue}/></label><br/>
+      <label>url2: <input type="text" name="url2" onChange={handleChangedValue}/></label><br/>
+      <p>materials:<br/>
+      <CheckboxList sendChangedValues={receiveChangedMaterial}/></p>
+    <GroupList type="painting" items={groups.filter(e=>e.group_type==="painting")} selected={newEntry.groupPainting} changeSelection={handleSelectionChange}/>
+
+
+    <GroupList type="sequenz" items={groups.filter(e=>e.group_type==="sequenz")} selected={newEntry.groupSequenz} changeSelection={handleSelectionChange}/>
+          <button type='submit' onClick={handleSubmit}>Submit</button>
+
+
       </form>
-    }
-      <label>Group Sequenz:
-        <select value={groupSequenz} onChange={event=>setGroupSequenz(event.target.value)}>
-          <option value={null}></option>
-          {groups.map((e1, i) => {
-            if (e1.group_type==="sequenz") {
-              return (
-                  <option key={'seq'+i} value={e1.name}>{e1.name}</option>
-              )
-            }}
-            )
-          }
-          <option value="new">new...</option>
-         </select>
-      </label><br/>
-         {groupSequenz==='new' &&
-      <form>
-        <label>New Group<input type="text" name="name" onChange={e=>setNewGroup({[e.target.name]: e.target.value, group_type: "sequenz"})}/></label>
-        <button type='submit' onClick={handleNewGroup}>create</button>
-      </form>
-    }<br/>
-      <input type="file" name="media" onChange={e=>setMedia(e.target.files[0])}/><br/>
-      <button type='submit' onClick={handleSubmit}>Submit</button>
-    </form>
+        {JSON.stringify(newEntry)}
+
     </div>
   )
 }
 
-export default Post
+export default Post2

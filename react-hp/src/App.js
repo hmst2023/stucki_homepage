@@ -9,8 +9,8 @@ import Datenschutz from './Datenschutz.js';
 import Impressum from './Impressum.js';
 import RequiredAuthentication from './RequiredAuthentication.js';
 import Post from './Post.js';
-import Post2 from './Post2.js';
 import Canvas from './Canvas.js';
+import Portfolio from './Portfolio.js';
 import './App.css'
 
 function App() {
@@ -20,12 +20,12 @@ function App() {
         <Route path="/" element={<Start/>}/>
         <Route path="login" element={<Login/>}/>
         <Route path="entries/:id" element={<Entry/>}/>
+        <Route path="portfolio" element={<Portfolio/>}/>
         <Route path="termsofuse" element={<TermsOfUse/>}/>
         <Route path="datenschutz" element={<Datenschutz/>}/>
         <Route path="impressum" element={<Impressum/>}/>
         <Route element={<RequiredAuthentication/>}>
           <Route path="post" element={<Post/>}/>
-          <Route path='post2' element={<Post2/>}/>
           <Route path='canvas' element={<Canvas/>}/>
         </Route>
       </Route>

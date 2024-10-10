@@ -26,6 +26,7 @@ const UploadWidget = ({ receivedUrl }) => {
         cropping: 'true',
         croppingCoordinatesMode: 'custom',
         uploadSignature: getSignature,
+        folder:"testfeld",
       }
 
     cloudinaryRef.current = window.cloudinary;
