@@ -1,9 +1,5 @@
-from dataclasses import dataclass
 from pydantic import BaseModel, Field, BeforeValidator
-from pydantic_core import core_schema
-from fastapi import Form, UploadFile
-from bson import ObjectId
-from typing import Optional,List, Any, Callable, Annotated, Union
+from typing import Optional,List, Annotated
 from enum import Enum
 from datetime import datetime
 
@@ -14,23 +10,15 @@ class MongoBaseModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
 
 
-@dataclass
-class PostEntry:
-    title: str = Form(None)
-    text: str = Form(None)
-    url: str = Form(None)
-    media_file: Union[str, UploadFile] = Form(None)
-    group_painting: str = Form(None)
-    group_sequenz: str = Form(None)
-
-
-class PostEntry2(BaseModel):
+class PostEntry(BaseModel):
     title: Optional[str] = None
     text: Optional[str] = None
     url: Optional[str] = None
+    url2: Optional[str] = None
+    material: Optional[dict] = None
     group_painting: Optional[str] = None
     group_sequenz: Optional[str] = None
-    media_file: Optional[dict] = None
+    media_file: dict | str = None
 
 
 class GroupTypes(str, Enum):
@@ -44,6 +32,8 @@ class GetEntries(MongoBaseModel):
     img: Optional[str] = None
     video: Optional[str] = None
     url: Optional[str] = None
+    url2: Optional[str] = None
+    material: Optional[list] = None
     timestamp: datetime
     group_painting: Optional[PyObjectId] = None
     group_sequenz: Optional[PyObjectId] = None
@@ -55,6 +45,8 @@ class GetSingleEntry(MongoBaseModel):
     img: Optional[str] = None
     video: Optional[str] = None
     url: Optional[str] = None
+    url2: Optional[str] = None
+    material: Optional[list] = None
     timestamp: datetime
     group_painting: Optional[str] = None
     group_sequenz: Optional[str] = None
@@ -62,19 +54,7 @@ class GetSingleEntry(MongoBaseModel):
     group_sequenz_members: List[GetEntries] = None
 
 
-class GetGroup(MongoBaseModel):
-    group_type: GroupTypes
-    name: str
-
-
-class GetOneGroup(MongoBaseModel):
-    group_type: GroupTypes
-    name: str
-    members: List[PyObjectId]
-    timestamp: datetime
-
-
-class PostGroup(BaseModel):
+class Group(MongoBaseModel):
     group_type: GroupTypes
     name: str
 
@@ -83,7 +63,3 @@ class LoginBase(BaseModel):
     email: str
     password: str
 
-
-class UserBase(BaseModel):
-    email:str
-    password:str

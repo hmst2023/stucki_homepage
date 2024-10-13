@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from 'react'
 
-const CheckboxList = ({sendChangedValues}) => {
+const CheckboxList = ({originalValue=[], sendChangedValues}) => {
+  console.log(originalValue)
   var kvMaterials =  {oil:false, canvas: false, watercolor:false, tempera:false, paper:false, electronics:false, code:false}
 
     var [labelsChecked, setLabelsChecked] = useState(kvMaterials)

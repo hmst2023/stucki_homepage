@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import CheckboxList from './components/CheckboxList';
 import GroupList from './components/GroupList';
 
-const Post2 = () => {
+const Post = () => {
   const {auth} = useAuth();
   const [newEntry, setNewEntry] = useState({});
   const [groups, setGroups] = useState([]);
@@ -99,4 +99,4 @@ const Post2 = () => {
   )
 }
 
-export default Post2
+export default Post

@@ -1,11 +1,10 @@
-import datetime
-
-from fastapi import APIRouter, Body, HTTPException, Request, Depends
+from fastapi import APIRouter, Body, HTTPException, Depends
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from .authentification import Authorization
-from .models import LoginBase
 from bson.objectid import ObjectId
 from cloudinary.utils import sign_request
+from .authentification import Authorization
+from .models import LoginBase
 from access_db import database
 
 router = APIRouter()
@@ -32,13 +31,13 @@ async def refresh_token(db=Depends(database), user_id=Depends(auth_handler.auth_
 
 #
 # @router.post('/register', response_description='Register user')
-# def register(request: Request, new_user:UserBase = Body(...)):
+# def register(new_user:LoginBase = Body(...), db=Depends(database)):
 #     new_user.password = auth_handler.get_password_hash(new_user.password)
-#     msg_collection = request.app.db['Users']
+#     msg_collection = db['Users']
 #     new_user = jsonable_encoder(new_user)
 #     user = msg_collection.insert_one(new_user)
 #     created_user = msg_collection.find_one({"_id": user.inserted_id})
-#     return JSONResponse(status_code=status.HTTP_201_CREATED, content=str(created_user))
+#     return JSONResponse(content=str(created_user))
 
 
 @router.post('/signature')

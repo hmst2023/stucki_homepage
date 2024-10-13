@@ -5,12 +5,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from decouple import config
-from setup import DEVELOPER_MODE
 
-if DEVELOPER_MODE:
-    SECRET_STRING = config('SECRET_STRING', cast=str)
-else:
-    SECRET_STRING = os.getenv("SECRET_STRING", "test")
+SECRET_STRING = config('SECRET_STRING', cast=str)
 
 
 class Authorization:

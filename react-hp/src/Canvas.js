@@ -14,7 +14,7 @@ const Canvas = () => {
         Sorry, your browser doesn't support canvas technology.
       </canvas> 
       hello
-      <CheckboxList labels={labelsChecked} sendChangedValues={receiveChangedValues} />
+      <CheckboxList originalValue={labelsChecked} sendChangedValues={receiveChangedValues} />
       <button onClick={()=>console.log(labelsChecked)}>test</button>
     </div>
   )

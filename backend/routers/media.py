@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.responses import JSONResponse
-from .authentification import Authorization
 from cloudinary.uploader import destroy
 from bson import ObjectId
+from .authentification import Authorization
 from access_db import database
 
 router = APIRouter()

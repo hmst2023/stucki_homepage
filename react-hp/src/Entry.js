@@ -160,7 +160,7 @@ const Entry = () => {
                     <p>URL2: {entry.url2}<input type='text' name="url2" value={newEntry.url2 ? newEntry.url2 :entry.url2} onChange={onChange}/></p>
                     <p>materials:<br/>
                       {entry.material}<br/>
-                      <CheckboxList originalValue={entry.material} sendChangedValues={receiveChangedMaterial}/>
+                      <CheckboxList originalValue={newEntry.material ? newEntry.material : entry.material} sendChangedValues={receiveChangedMaterial}/>
                     </p>
                       <label>Group Painting: {entry.group_painting}
                         <select value={newEntry.groupPainting} onChange={event=>setNewEntry({...newEntry, groupPainting: event.target.value})}>

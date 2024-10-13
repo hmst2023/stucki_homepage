@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, status, Body, HTTPException
 from fastapi.responses import JSONResponse
 from typing import List
-from .authentification import Authorization
 from bson import ObjectId
-from .models import GetGroup, PostGroup, GetOneGroup, GetEntries
 from datetime import datetime
+from .models import GetEntries, Group
+from .authentification import Authorization
 from access_db import database
 
 router = APIRouter()
@@ -12,15 +12,23 @@ auth_handler = Authorization()
 
 
 @router.get("/")
-def get_test_entry(db=Depends(database)) -> List[GetGroup]:
+def get_test_entry(db=Depends(database)) -> List[Group]:
     groups = []
     for entry in db['groups'].find():
-        groups.append(GetGroup(**entry))
+        groups.append(Group(**entry))
     return groups
 
 
+@router.get("/{group_name}")
+def list_by_group(group_name:str, db=Depends(database)) -> List[GetEntries]:
+    group = db['groups'].find_one({'name': group_name})
+    if not group:
+        raise HTTPException(status_code=404, detail=f"Group with {group_name} not found")
+    return [GetEntries(**entry) for entry in db['entries'].find({'group_sequenz': group['_id']})]
+
+
 @router.post("/")
-def post_new_group(db=Depends(database), group: PostGroup = Body(...), user_id=Depends(auth_handler.auth_wrapper)) -> JSONResponse:
+def post_new_group(db=Depends(database), group: Group = Body(...), user_id=Depends(auth_handler.auth_wrapper)) -> JSONResponse:
     if not (db['groups'].find_one({'name': group.name})):
         new_group = db['groups'].insert_one({
             'name': group.name,
