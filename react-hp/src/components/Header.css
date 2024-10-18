@@ -34,6 +34,13 @@
     display: block;
     list-style-type: none;
     margin-right: 28px;
+    & ul {
+      position: relative;
+      font-weight: lighter;
+      font-size: small;
+      position: relative;
+      margin-right: 10px;
+    }
   }
   li {
     margin: 8px;
@@ -72,6 +79,8 @@
     margin-right: 20px;
   }
   
+
+
   @media screen and (min-width: 1024px) {
     .Header {
       display: block;

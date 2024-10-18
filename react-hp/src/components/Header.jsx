@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import useCheckSmallscreen from '../hooks/useCheckSmallscreen'
 import './Header.css'
@@ -7,7 +7,8 @@ import './Header.css'
 const Header = () => {
   const smallscreen = useCheckSmallscreen()
   const {auth, setAuth} = useAuth();
- const [menue, setMenue] = useState(false);
+  const [menue, setMenue] = useState(false);
+  const blubb = useLocation()
 
   let navigate = useNavigate();
   const Mailto = ({ email, children }) => {
@@ -46,13 +47,20 @@ const Header = () => {
     )
   }
   const NavBarBig = () =>{
+ 
     return(
       <div>
         <ul>
-          <li><Link to="/">Arbeiten</Link></li>
-          <li><Mailto email="info@stucki.cc">Kontakt</Mailto></li>
-          <li><Link to="/impressum">Impressum</Link></li>
-          <li><Link to="/datenschutz">Datenschutz</Link></li>
+          <li><Link to="/">works</Link></li>
+          {blubb.pathname.slice(1)==="portfolio" &&
+          <ul>
+            <li>coding</li>
+          </ul>
+          }
+          
+          <li><Mailto email="info@stucki.cc">contact</Mailto></li>
+          <li><Link to="/impressum">legal notice</Link></li>
+          <li><Link to="/datenschutz">privacy policy</Link></li>
           {auth && <>
                       <li style={{marginTop:'40px'}}><Link to="post">Post</Link></li>
                       <li><LogButton/></li>
@@ -68,7 +76,7 @@ const Header = () => {
     <div className="Header">
         <div>
           <h1>stucki.cc</h1>
-          <h2>Stucki - Artist's profile</h2>
+          <h2>art and tech profile</h2>
         </div>
         { smallscreen ? <NavBarSmall/> : <NavBarBig/>}
     </div>
