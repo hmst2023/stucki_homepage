@@ -8,3 +8,5 @@ Spacefile
 .vercel/
 .pytest_cache
 .vercel
+databackup/
+mediabackup/
