@@ -16,8 +16,8 @@ class PostEntry(BaseModel):
     url: Optional[str] = None
     url2: Optional[str] = None
     material: Optional[dict] = None
-    group_painting: Optional[str] = None
-    group_sequenz: Optional[str] = None
+    group_painting: Optional[str] = Field(alias='groupPainting', default=None)
+    group_sequenz: Optional[str] = Field(alias='groupSequenz', default=None)
     media_file: dict | str = None
 
 
